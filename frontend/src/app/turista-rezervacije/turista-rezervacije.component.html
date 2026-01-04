@@ -1,0 +1,163 @@
+<div class="reservations-container">
+  <div class="reservations-header">
+    <h2>📅 Moje Rezervacije</h2>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje rezervacija...</div>
+  } @else {
+    <section class="reservations-section">
+      <h3>Aktuelne Rezervacije</h3>
+      
+      @if (currentReservations.length > 0) {
+        <div class="table-container">
+          <table class="reservations-table">
+            <thead>
+              <tr>
+                <th>Vikendica</th>
+                <th>Mesto</th>
+                <th>Period</th>
+                <th>Cena</th>
+                <th>Status</th>
+                <th>Akcije</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (reservation of currentReservations; track reservation._id) {
+                <tr>
+                  <td>{{ reservation.cabinName }}</td>
+                  <td>{{ reservation.cabinLocation }}</td>
+                  <td>
+                    {{ formDate(reservation.startDate) }} - 
+                    {{ formDate(reservation.endDate) }}
+                  </td>
+                  <td>{{ reservation.totalPrice }}€</td>
+                  <td>
+                    <span class="status-badge">{{ getStatusText(reservation.status) }}</span>
+                  </td>
+                  <td>
+                    @if (canCancelReservation(reservation)) {
+                      <button (click)="cancelReservation(reservation)" 
+                              class="btn btn-sm btn-remove">
+                        Otkaži
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="no-data">Nema trenutnih rezervacija</div>
+      }
+    </section>
+
+    <section class="reservations-section">
+      <h3>Prethodne Rezervacije</h3>
+
+      @if (previousReservations.length > 0) {
+        <div class="table-container">
+          <table class="reservations-table">
+            <thead>
+              <tr>
+                <th>Vikendica</th>
+                <th>Period</th>
+                <th>Cena</th>
+                <th>Ocena</th>
+                <th>Komentar</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (reservation of previousReservations; track reservation._id) {
+                <tr>
+                  <td>{{ reservation.cabinName }}</td>
+                  <td>
+                    {{ formDate(reservation.startDate) }} - 
+                    {{ formDate(reservation.endDate) }}
+                  </td>
+                  <td>{{ reservation.totalPrice }}€</td>
+                  <td>
+                    @if (reservation.rating) {
+                      <span>{{ showStars(reservation.rating) }}</span>
+                    } @else if (canRate(reservation)) {
+                      <button (click)="openRatingForm(reservation)" 
+                              class="btn btn-sm">
+                        Oceni
+                      </button>
+                    }
+                  </td>
+                  <td>
+                    @if (reservation.comment) {
+                      <span class="comment-preview">{{ reservation.comment | slice:0:50 }}{{ reservation.comment.length > 50 ? '...' : '' }}</span>
+                    } @else {
+                      <span class="no-comment">-</span>
+                    }
+                </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="no-data">Nema prethodnih rezervacija</div>
+      }
+    </section>
+  }
+
+  @if (message) {
+    <div class="message">{{ message }}</div>
+  }
+</div>
+
+@if (showRatingModal && selectedReservation) {
+  <div class="rating-modal">
+    <div class="modal-content">
+      <h3>Ocenite vaš boravak</h3>
+      <div class="modal-subtitle">
+        {{ selectedReservation.cabinName }}
+      </div>
+      
+      <div class="rating-form">
+        <div class="rating-stars">
+          <label>Ocena (1-5 zvezdica):</label>
+          <div class="stars-container">
+            @for (star of [1,2,3,4,5]; track star) {
+              <span 
+                class="star {{ star <= ratingData.rating ? 'active' : '' }}"
+                (click)="putRating(star)">
+                ★
+              </span>
+            }
+          </div>
+          <span class="rating-text">
+            {{ ratingData.rating }}/5 zvezdica
+          </span>
+        </div>
+
+        <div class="comment-section">
+          <label for="comment">Komentar (opciono):</label>
+          <textarea 
+            id="comment"
+            class="textarea"
+            [(ngModel)]="ratingData.comment"
+            placeholder="Podelite vaša iskustva..."
+            maxlength="500">
+          </textarea>
+          <span class="char-counter">
+            {{ ratingData.comment.length }}/500 karaktera
+          </span>
+        </div>
+
+        <div class="modal-actions">
+          <button (click)="closeRatingForm()" class="btn btn-secondary">
+            Otkaži
+          </button>
+          <button (click)="confirmCommentAndRating()" class="btn btn-primary">
+            Sačuvaj ocenu i komentar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

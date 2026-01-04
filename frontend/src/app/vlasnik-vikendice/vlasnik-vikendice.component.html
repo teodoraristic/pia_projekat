@@ -1,0 +1,106 @@
+<div class="cabins-container">
+  <div class="cabins-header">
+    <h2>🏠 Moje Vikendice</h2>
+    <p>Upravljajte vašim vikendicama</p>
+    <div class="header-actions">
+      <a [routerLink]="['/owner/new-cabin']" class="btn btn-primary">
+        ➕ Dodaj novu vikendicu
+      </a>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje vikendica...</div>
+  } @else {
+    <div class="table-container">
+      <table class="cabins-table">
+        <thead>
+          <tr>
+            <th>Naziv</th>
+            <th>Lokacija</th>
+            <th>Usluge</th>
+            <th>Cena leto</th>
+            <th>Cena zima</th>
+            <th>Ocena</th>
+            <th>Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cabin of cabins; track cabin._id) {
+            <tr>
+              <td class="cabin-name">{{ cabin.name }}</td>
+              <td>{{ cabin.location }}</td>
+              <td>
+                <div class="services-list">
+                  @for (service of cabin.services.slice(0, 2); track service) {
+                    <span class="service-tag">{{ service }}</span>
+                  }
+                  @if (cabin.services.length > 2) {
+                    <span class="more-tag">+{{ cabin.services.length - 2 }}</span>
+                  }
+                </div>
+              </td>
+              <td class="price">{{ formatPrice(cabin.priceSummer) }}</td>
+              <td class="price">{{ formatPrice(cabin.priceWinter) }}</td>
+              <td class="rating">
+                <div class="stars">{{ showStars(cabin.averageRating || 0) }}</div>
+                <div class="rating-text">{{ (cabin.averageRating || 0).toFixed(1) }}</div>
+              </td>
+              <td class="actions">
+                <button [routerLink]="['/owner/edit-cabin', cabin._id]" 
+                        class="btn btn-edit btn-sm">
+                  ✏️ Izmeni
+                </button>
+                <button (click)="deleteCabin(cabin)" 
+                        class="btn btn-danger btn-sm">
+                  🗑️ Obriši
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="no-data">
+                Nemate nijednu vikendicu. 
+                <a [routerLink]="['/owner/new-cabin']" class="add-link">Dodajte prvu vikendicu</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="results-info">
+      Ukupno vikendica: {{ cabins.length }}
+    </div>
+  }
+
+  @if (cabinToDelete) {
+    <div class="delete-modal">
+      <div class="modal-content">
+        <h3>Potvrda brisanja</h3>
+        <p>Da li ste sigurni da želite da obrišete vikendicu:</p>
+        <p><strong>"{{ cabinToDelete.name }}"</strong>?</p>
+        <p class="warning-text">Ova akcija se ne može poništiti!</p>
+
+        <div class="modal-actions">
+          <button (click)="cancelDelete()" class="btn btn-secondary">Otkaži</button>
+          <button (click)="confirmDelete()" 
+                  [disabled]="isLoading"
+                  class="btn btn-danger">
+            @if (isLoading) {
+              Brisanje...
+            } @else {
+              Obriši
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (message) {
+    <div class="message" [class.success]="message.includes('uspešno')">
+      {{ message }}
+    </div>
+  }
+</div>

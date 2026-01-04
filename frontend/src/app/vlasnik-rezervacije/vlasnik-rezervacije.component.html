@@ -1,0 +1,191 @@
+<div class="reservations-container">
+  <div class="header">
+    <h2>Rezervacije</h2>
+    <button (click)="toggleCalendar()" class="btn btn-calendar">
+      {{ showCalendar ? 'Lista rezervacija' : 'Kalendarski prikaz' }}
+    </button>
+  </div>
+
+  @if (message) {
+    <div class="message" [class.success]="message.includes('uspešno')" 
+                         [class.error]="!message.includes('uspešno')">
+      {{ message }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje rezervacija...</div>
+  }
+
+  @if (showCalendar && !isLoading) {
+    <div class="calendar-section">
+      <h3>Kalendarski prikaz rezervacija</h3>
+      <div class="calendar-legend">
+        <div class="legend-item">
+          <span class="legend-color pending">&nbsp;&nbsp;&nbsp;</span>
+          <span>&nbsp;Neobrađene rezervacije</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color confirmed">&nbsp;&nbsp;&nbsp;</span>
+          <span>&nbsp;Potvrđene rezervacije</span>
+        </div>
+      </div>
+      <full-calendar [options]="calendarOptions" class="calendar"></full-calendar>
+    </div>
+  }
+
+  @if (!showCalendar && !isLoading) {
+    <div class="reservations-list">
+      <h3>Neobrađene rezervacije</h3>
+      
+      @if (pendingReservations.length == 0) {
+        <div class="no-reservations">
+          <p>Trenutno nema neobrađenih rezervacija.</p>
+        </div>
+      } @else {
+        <div class="reservations-grid">
+          @for (reservation of pendingReservations; track reservation._id) {
+            <div class="reservation-card">
+              <div class="reservation-header">
+                <h4>{{ getCabinName(reservation) }}</h4>
+                <span class="status-badge" [style.background-color]="getStatusColor(reservation.status)">
+                  {{ getStatusText(reservation.status) }}
+                </span>
+              </div>
+              
+              <div class="reservation-details">
+                <div class="detail-item">
+                  <strong>Turista:</strong>
+                  <span>{{ getTouristName(reservation) }}</span>
+                </div>
+                <div class="detail-item">
+                  <strong>Period:</strong>
+                  <span>{{ formatDate(reservation.startDate) }} - {{ formatDate(reservation.endDate) }}</span>
+                </div>
+                <div class="detail-item">
+                  <strong>Osobe:</strong>
+                  <span>{{ reservation.adults }} odraslih, {{ reservation.children }} dece</span>
+                </div>
+                <div class="detail-item">
+                  <strong>Ukupna cena:</strong>
+                  <span class="price">{{ getTotalPrice(reservation) }}€</span>
+                </div>
+                @if (reservation.additionalRequests) {
+                  <div class="detail-item">
+                    <strong>Dodatni zahtevi:</strong>
+                    <span>{{ reservation.additionalRequests }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="reservation-actions">
+                <button (click)="confirmReservation(reservation)" 
+                        class="btn btn-success"
+                        [disabled]="isLoading">
+                  Potvrdi
+                </button>
+                <button (click)="rejectReservation(reservation)" 
+                        class="btn btn-danger">
+                  Odbij
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+@if (selectedReservation && showEventModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Upravljanje rezervacijom</h3>
+        <button (click)="closeEventModal()" class="btn-close">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <p><strong>Vikendica:</strong> {{ getCabinName(selectedReservation) }}</p>
+        <p><strong>Turista:</strong> {{ getTouristName(selectedReservation) }}</p>
+        <p><strong>Period:</strong> {{ formatDate(selectedReservation.startDate) }} - {{ formatDate(selectedReservation.endDate) }}</p>
+        <p><strong>Status:</strong> {{ getStatusText(selectedReservation.status) }}</p>
+        
+        @if (selectedReservation.status == 'pending') {
+          <div class="form-group">
+            <label for="eventOwnerComment">Komentar (obavezno za odbijanje):</label>
+            <textarea id="eventOwnerComment" [(ngModel)]="ownerComment" 
+                      class="form-control" rows="3" 
+                      placeholder="Unesite komentar ako odbijate rezervaciju..."></textarea>
+          </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="closeEventModal()" 
+                class="btn btn-secondary">
+          Zatvori
+        </button>
+        
+        @if (selectedReservation.status == 'pending') {
+          <button (click)="confirmReservation(selectedReservation)" 
+                  class="btn btn-success"
+                  [disabled]="isLoading">
+            Potvrdi
+          </button>
+          <button (click)="rejectFromCalendar()" 
+                  class="btn btn-danger"
+                  [disabled]="isLoading">
+            Odbij
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
+</div>
+
+@if (selectedReservation && !showEventModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Odbijanje rezervacije</h3>
+        @if (modalMessage) {
+           <div class="message" [class.success]="modalMessage.includes('uspešno')" 
+                              [class.error]="!modalMessage.includes('uspešno')">
+              {{ modalMessage }}
+            </div>
+        }
+      </div>
+      
+      <div class="modal-body">
+        <p><strong>Vikendica:</strong> {{ getCabinName(selectedReservation) }}</p>
+        <p><strong>Turista:</strong> {{ getTouristName(selectedReservation) }}</p>
+        <p><strong>Period:</strong> {{ formatDate(selectedReservation.startDate) }} - {{ formatDate(selectedReservation.endDate) }}</p>
+        
+        <div class="form-group">
+          <label for="ownerComment">Razlog odbijanja *</label>
+          <textarea id="ownerComment" [(ngModel)]="ownerComment" 
+                    class="form-control" rows="5" 
+                    placeholder="Obavezno unesite razlog odbijanja rezervacije..."
+                    required></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="cancelRejection()" 
+                class="btn btn-secondary">
+          Otkaži
+        </button>
+        <button (click)="confirmRejection()" 
+                class="btn btn-danger"
+                [disabled]="isLoading">
+          @if (isLoading) {
+            Odbijanje...
+          } @else {
+            Potvrdi odbijanje
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

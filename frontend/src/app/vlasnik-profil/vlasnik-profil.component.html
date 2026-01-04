@@ -1,0 +1,100 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h2>Moj profil</h2>
+    <button (click)="toggleEditMode()" class="btn btn-edit">
+      {{ isEditMode ? 'Otkaži' : 'Izmeni' }}
+    </button>
+  </div>
+
+  <div class="profile-content">
+    <div class="profile-image-section">
+      <div class="image-container">
+        <img [src]="profilePicturePreview" 
+             alt="Profilna slika" 
+             class="profile-image" />
+        
+        @if (isEditMode) {
+          <div class="image-actions">
+            <input type="file" id="profilePicture" 
+                   (change)="onFileSelected($event)" 
+                   accept=".jpg,.jpeg,.png" 
+                   class="file-input">
+            <label for="profilePicture" class="btn btn-upload">Promeni sliku</label>
+            <button type="button" (click)="removePicture()" class="btn btn-remove">
+              Ukloni sliku
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="profile-data">
+      <form #profileForm="ngForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="username">Korisničko ime</label>
+            <input type="text" id="username" [(ngModel)]="user.username" 
+                   name="username" class="form-control" disabled>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email adresa *</label>
+            <input type="email" id="email" [(ngModel)]="user.email" 
+                   name="email" class="form-control" 
+                   [disabled]="!isEditMode" required>
+          </div>
+
+          <div class="form-group">
+            <label for="firstName">Ime *</label>
+            <input type="text" id="firstName" [(ngModel)]="user.firstName" 
+                   name="firstName" class="form-control" 
+                   [disabled]="!isEditMode" required>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Prezime *</label>
+            <input type="text" id="lastName" [(ngModel)]="user.lastName" 
+                   name="lastName" class="form-control" 
+                   [disabled]="!isEditMode" required>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Kontakt telefon *</label>
+            <input type="tel" id="phone" [(ngModel)]="user.phone" 
+                   name="phone" class="form-control" 
+                   [disabled]="!isEditMode" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="address">Adresa *</label>
+            <input type="text" id="address" [(ngModel)]="user.address" 
+                   name="address" class="form-control" 
+                   [disabled]="!isEditMode" required>
+          </div>
+        </div>
+
+        @if (isEditMode) {
+          <div class="form-actions">
+            <button type="button" (click)="saveChanges()" 
+                    [disabled]="isLoading || !profileForm.form.valid" 
+                    class="btn btn-primary">
+              @if (isLoading) {
+                Čuvanje...
+              } @else {
+                Sačuvaj izmene
+              }
+            </button>
+            <button type="button" (click)="toggleEditMode()" 
+                    class="btn btn-secondary">Otkaži</button>
+          </div>
+        }
+      </form>
+    </div>
+  </div>
+
+  @if (message) {
+    <div class="message" [class.success]="message.includes('uspešno')" [class.error]="!message.includes('uspešno')">
+      {{ message }}
+    </div>
+  }
+</div>

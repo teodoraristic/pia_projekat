@@ -1,0 +1,184 @@
+<div class="new-cabin-container">
+  <div class="cabin-header">
+    <h2>➕ Nova Vikendica</h2>
+    <p>Dodajte novu vikendicu u vaš portfolio</p>
+  </div>
+
+<div class="json-import-section">
+  <h3>📁 Brzo popunjavanje preko JSON fajla</h3>
+  
+  <div class="file-upload-container">
+    <label for="jsonFile">
+      Odaberite JSON fajl
+    </label>    <input 
+      type="file" 
+      id="jsonFile"
+      accept=".json"
+      (change)="onJsonFileSelected($event)"
+      class="file-input"
+    >
+
+    @if (selectedJsonFile) {
+      <div class="file-info">
+        Odabran fajl: {{ selectedJsonFile.name }}
+        <button type="button" (click)="clearJsonImport()" class="clear-button">✕</button>
+      </div>
+    }
+  </div>
+
+  @if (jsonImportError) {
+    <div class="error-message">
+      {{ jsonImportError }}
+    </div>
+  }
+
+  <div class="json-format-info">
+    <h4>Očekivani format JSON fajla:</h4>
+    <pre class="json-example">{{ jsonExample }}</pre>
+    <p class="note"><strong>Napomena:</strong> Slike se ne uvoze preko JSON fajla.</p>
+  </div>
+</div>
+
+  <form #cabinForm="ngForm" class="cabin-form">
+    <div class="form-section">
+      <h3>Osnovni podaci</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Naziv vikendice *</label>
+          <input type="text" id="name" [(ngModel)]="cabinData.name" 
+                 name="name" class="form-control" required
+                 placeholder="Unesite naziv vikendice">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Lokacija *</label>
+          <input type="text" id="location" [(ngModel)]="cabinData.location" 
+                 name="location" class="form-control" required
+                 placeholder="Unesite lokaciju">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Opis vikendice</label>
+        <textarea id="description" [(ngModel)]="cabinData.description" 
+                  name="description" class="form-control textarea"
+                  placeholder="Opisite vašu vikendicu..."
+                  rows="4"></textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Cene noćenja</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="priceSummer">Cena letnji period (€) *</label>
+          <input type="number" id="priceSummer" [(ngModel)]="cabinData.priceSummer" 
+                 name="priceSummer" class="form-control" required min="1"
+                 placeholder="Cena po noćenju">
+        </div>
+
+        <div class="form-group">
+          <label for="priceWinter">Cena zimski period (€) *</label>
+          <input type="number" id="priceWinter" [(ngModel)]="cabinData.priceWinter" 
+                 name="priceWinter" class="form-control" required min="1"
+                 placeholder="Cena po noćenju">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Kontakt i lokacija</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">Telefon *</label>
+          <input type="tel" id="phone" [(ngModel)]="cabinData.phone" 
+                 name="phone" class="form-control" required
+                 placeholder="Unesite kontakt telefon">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="lat">Geografska širina (latitude)</label>
+          <input type="number" id="lat" [(ngModel)]="cabinData.coordinates.lat" 
+                 name="lat" class="form-control" step="0.000001"
+                 placeholder="44.7866">
+        </div>
+
+        <div class="form-group">
+          <label for="lng">Geografska dužina (longitude)</label>
+          <input type="number" id="lng" [(ngModel)]="cabinData.coordinates.lng" 
+                 name="lng" class="form-control" step="0.000001"
+                 placeholder="20.4489">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Usluge</h3>
+      
+      <div class="form-group">
+        <label for="newService">Dodaj uslugu</label>
+        <div class="service-input">
+          <input type="text" id="newService" [(ngModel)]="newService" 
+                 name="newService" class="form-control"
+                 placeholder="Unesite uslugu (npr. WiFi, parking, bazen...)">
+          <button type="button" (click)="addService()" class="btn btn-add">+ Dodaj</button>
+        </div>
+      </div>
+
+      <div class="services-list">
+        @for (service of cabinData.services; track service; let i = $index) {
+          <div class="service-tag">
+            {{ service }}
+            <button type="button" (click)="removeService(i)" class="btn-remove-service">×</button>
+          </div>
+        } @empty {
+          <p class="no-services">Nema dodatih usluga</p>
+        }
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Slike vikendice</h3>
+      
+      <div class="form-group">
+        <label for="images">Dodaj slike</label>
+        <input type="file" id="images" (change)="onFileSelected($event)" 
+               accept=".jpg,.jpeg,.png" class="file-input" multiple>
+        <small class="form-text">Maksimalno 10 slika, JPG/PNG format, do 5MB po slici</small>
+      </div>
+
+      <div class="image-previews">
+        @for (preview of imagePreviews; track preview; let i = $index) {
+          <div class="image-preview">
+            <img [src]="preview" alt="Preview" class="preview-image">
+            <button type="button" (click)="removeImage(i)" class="btn-remove-image">×</button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="cancel()" class="btn btn-secondary">Otkaži</button>
+      <button type="button" (click)="createCabin()" 
+              [disabled]="isLoading || !cabinForm.form.valid"
+              class="btn btn-primary">
+        @if (isLoading) {
+          Kreiranje...
+        } @else {
+          Kreiraj vikendicu
+        }
+      </button>
+    </div>
+  </form>
+
+  @if (message) {
+    <div class="message" [class.success]="message.includes('uspešno')">
+      {{ message }}
+    </div>
+  }
+</div>

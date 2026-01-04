@@ -1,0 +1,141 @@
+<div class="admin-cabins-container">
+  <div class="cabins-header">
+    <h2>🏠 Upravljanje Vikendicama</h2>
+    <p>Pregled i upravljanje svim vikendicama u sistemu</p>
+  </div>
+
+  @if (message) {
+    <div class="alert" [class.alert-success]="messageType === 'success'" [class.alert-error]="messageType === 'error'">
+      {{ message }}
+    </div>
+  }
+
+  <!-- Pretraga -->
+  <div class="search-section">
+    <div class="search-filters">
+      <div class="filter-group">
+        <label for="searchTerm">Pretraga:</label>
+        <input type="text" id="searchTerm" [(ngModel)]="searchTerm" 
+               placeholder="Naziv, lokacija, vlasnik..." class="form-control"
+               (input)="search()">
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="resetFilters()" class="btn btn-secondary">Resetuj</button>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje vikendica i ocena...</div>
+  } @else {
+    <!-- Tabela vikendica -->
+    <div class="table-container">
+      <table class="cabins-table">
+        <thead>
+          <tr>
+            <th>Naziv</th>
+            <th>Lokacija</th>
+            <th>Vlasnik</th>
+            <th>Prosečna ocena</th>
+            <th>Ukupno ocena</th>
+            <th>Poslednje 3 ocene</th>
+            <th>Status</th>
+            <th>Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cabin of filteredCabins; track cabin._id) {
+            <tr [class.low-rated]="shouldHighlightCabin(cabin)"
+                [class.blocked]="isCabinBlocked(cabin)">
+              <td class="cabin-name">{{ cabin.name }}</td>
+              <td>{{ cabin.location }}</td>
+              <td>
+                @if (cabin.ownerId && cabin.ownerId.firstName) {
+                  {{ cabin.ownerId.firstName }} {{ cabin.ownerId.lastName }}
+                } @else {
+                  Nepoznato
+                }
+              </td>
+              <td>
+                <span class="rating">
+                  ⭐ {{ getRatingDisplay(cabin) }}
+                </span>
+              </td>
+              <td>
+                {{ getTotalReviews(cabin) }}
+              </td>
+              <td>
+                <span class="rating" [class.low-rating]="shouldHighlightCabin(cabin)">
+                  {{ getLastThreeRatingsDisplay(cabin) }}
+                </span>
+              </td>
+              <td>
+                @if (isCabinBlocked(cabin)) {
+                  <span class="status-badge blocked-badge">
+                    🔒 Blokirana ({{ getBlockedTimeLeft(cabin) }})
+                  </span>
+                } @else if (cabin.isActive) {
+                  <span class="status-badge active-badge">
+                    ✅ Aktivna
+                  </span>
+                } @else {
+                  <span class="status-badge inactive-badge">
+                    ❌ Neaktivna
+                  </span>
+                }
+              </td>
+              <td class="actions">
+                @if (shouldHighlightCabin(cabin) && !isCabinBlocked(cabin) && cabin.isActive) {
+                  <button (click)="blockCabin(cabin)" class="btn btn-warning btn-sm">
+                    Blokiraj
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="no-data">
+                Nema pronađenih vikendica
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="results-info">
+      Prikazano {{ filteredCabins.length }} od {{ cabins.length }} vikendica
+      @if (getLowRatedCabinsCount() > 0) {
+        • <span class="warning-text">{{ getLowRatedCabinsCount() }} vikendica sa niskim ocenama</span>
+      }
+    </div>
+  }
+
+  @if (cabinToBlock) {
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Blokiranje vikendice</h3>
+          <button (click)="cancelAction()" class="btn-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Da li ste sigurni da želite da blokirate vikendicu:</p>
+          <p><strong>{{ cabinToBlock.name }}</strong> u {{ cabinToBlock.location }}?</p>
+          <p class="warning-text">
+            Vikendica će biti onemogućena za rezervisanje narednih 48 sati!
+          </p>
+          <p><strong>Razlog:</strong> Prosečna ocena poslednja tri komentara je ispod 2 ({{ getLastThreeRatingsDisplay(cabinToBlock) }}).</p>
+          <p><strong>Ukupno ocena:</strong> {{ getTotalReviews(cabinToBlock) }}</p>
+          <p><strong>Ukupna prosečna ocena:</strong> {{ getRatingDisplay(cabinToBlock) }}</p>
+        </div>
+        <div class="modal-actions">
+          <button (click)="cancelAction()" class="btn btn-secondary">Otkaži</button>
+          <button (click)="confirmBlock()" [disabled]="isLoading" class="btn btn-warning">
+            {{ isLoading ? 'Blokiranje...' : 'Blokiraj' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

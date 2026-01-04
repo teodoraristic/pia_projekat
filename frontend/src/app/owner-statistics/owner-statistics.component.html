@@ -1,0 +1,59 @@
+<div class="statistics-container">
+  <div class="statistics-header">
+    <h2>📊 Statistika</h2>
+    <p>Pregled rezervacija za vaše vikendice</p>
+    <button (click)="refreshStatistics()" class="btn btn-refresh" [disabled]="isLoading">
+      🔄 Osveži statistiku
+    </button>
+  </div>
+
+  @if (message) {
+    <div class="message" [class.success]="message.includes('uspešno')" 
+                         [class.error]="!message.includes('uspešno')">
+      {{ message }}
+    </div>
+  }
+
+  <div [hidden]="!isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Učitavanje statistike...</p>
+  </div>
+
+  <div [hidden]="isLoading">
+    <div class="chart-section">
+      <h3>Broj rezervacija po mesecima</h3>
+      <div class="chart-container">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h3>Odnos rezervacija: Vikend vs Radni dani</h3>
+      <div id="pieChartsContainer" class="pie-charts-container">
+        @if (cabins.length === 0) {
+          <div class="no-data">
+            <p>Nemate vikendica za prikaz statistike.</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <h3>Ukupna statistika</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">{{ cabins.length }}</div>
+          <div class="stat-label">Ukupno vikendica</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ reservations.length }}</div>
+          <div class="stat-label">Ukupno rezervacija</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ getCompletedReservations() }}</div>
+          <div class="stat-label">Ostvarenih rezervacija</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,103 @@
+<div class="cabins-container">
+  <div class="cabins-header">
+    <h2>Vikendice</h2>
+    <p>Pronađite savršenu vikendicu za vaš odmor</p>
+  </div>
+
+  <div class="search-section">
+    <div class="search-filters">
+      <div class="filter-group">
+        <label for="filterName">Naziv:</label>
+        <input type="text" id="filterName" [(ngModel)]="filterName" 
+               placeholder="Naziv vikendice..." class="form-control"
+               (input)="onFilterChange()">
+      </div>
+      
+      <div class="filter-group">
+        <label for="filterPlace">Mesto:</label>
+        <input type="text" id="filterPlace" [(ngModel)]="filterPlace" 
+               placeholder="Mesto..." class="form-control"
+               (input)="onFilterChange()">
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="resetFilters()" class="btn btn-secondary">Resetuj</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cabins-section">
+    @if (isLoading) {
+      <div class="loading">Učitavanje vikendica...</div>
+    } @else {
+      <div class="table-container">
+        <table class="cabins-table">
+          <thead>
+            <tr>
+              <th (click)="toggleSort('name')" class="sortable">
+                Naziv {{ getSortIndicator('name') }}
+              </th>
+              <th (click)="toggleSort('location')" class="sortable">
+                Mesto {{ getSortIndicator('location') }}
+              </th>
+              <th>Usluge</th>
+              <th (click)="toggleSort('priceSummer')" class="sortable">
+                Cena leto {{ getSortIndicator('priceSummer') }}
+              </th>
+              <th (click)="toggleSort('priceWinter')" class="sortable">
+                Cena zima {{ getSortIndicator('priceWinter') }}
+              </th>
+              <th (click)="toggleSort('rating')" class="sortable">
+                Ocena {{ getSortIndicator('rating') }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cabin of filteredCabins; track cabin._id) {
+              <tr>
+                <td>
+                  <a (click)="goToDetails(cabin._id)" class="cabin-name-link">
+                    {{ cabin.name }}
+                  </a>
+                </td>
+                <td>{{ cabin.location }}</td>
+                <td>
+                  <div class="services-list">
+                    @for (service of cabin.services.slice(0, 2); track service) {
+                      <span class="service-tag">{{ service }}</span>
+                    }
+                    @if (cabin.services.length > 2) {
+                      <span class="more-tag">+{{ cabin.services.length - 2 }}</span>
+                    }
+                  </div>
+                </td>
+                <td class="price">{{ cabin.priceSummer }}€</td>
+                <td class="price">{{ cabin.priceWinter }}€</td>
+                <td class="rating">
+                  <div class="stars">{{ showStarRating(cabin.averageRating) }}</div>
+                  <div class="rating-text">{{ cabin.averageRating?.toFixed(1) || '0.0' }}</div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="no-data">
+                  Nema pronađenih vikendica
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="results-info">
+        Prikazano {{ filteredCabins.length }} od {{ cabins.length }} vikendica
+      </div>
+    }
+  </div>
+
+  @if (message) {
+    <div class="message">
+      {{ message }}
+    </div>
+  }
+</div>

@@ -1,0 +1,153 @@
+<div class="edit-cabin-container">
+  <div class="cabin-header">
+    <h2>✏️ Izmena Vikendice</h2>
+    <p>Ažurirajte podatke o vašoj vikendici</p>
+  </div>
+
+  @if (isLoading && !cabin._id) {
+    <div class="loading">Učitavanje vikendice...</div>
+  } @else {
+    <form #cabinForm="ngForm" class="cabin-form">
+      <div class="form-section">
+        <h3>Osnovni podaci</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Naziv vikendice *</label>
+            <input type="text" id="name" [(ngModel)]="cabin.name" 
+                   name="name" class="form-control" required
+                   placeholder="Unesite naziv vikendice">
+          </div>
+
+          <div class="form-group">
+            <label for="location">Lokacija *</label>
+            <input type="text" id="location" [(ngModel)]="cabin.location" 
+                   name="location" class="form-control" required
+                   placeholder="Unesite lokaciju">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Opis vikendice</label>
+          <textarea id="description" [(ngModel)]="cabin.description" 
+                    name="description" class="form-control textarea"
+                    placeholder="Opisite vašu vikendicu..."
+                    rows="4"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Cene noćenja</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="priceSummer">Cena letnji period (€) *</label>
+            <input type="number" id="priceSummer" [(ngModel)]="cabin.priceSummer" 
+                   name="priceSummer" class="form-control" required min="1"
+                   placeholder="Cena po noćenju">
+          </div>
+
+          <div class="form-group">
+            <label for="priceWinter">Cena zimski period (€) *</label>
+            <input type="number" id="priceWinter" [(ngModel)]="cabin.priceWinter" 
+                   name="priceWinter" class="form-control" required min="1"
+                   placeholder="Cena po noćenju">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Kontakt i lokacija</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Telefon *</label>
+            <input type="tel" id="phone" [(ngModel)]="cabin.phone" 
+                   name="phone" class="form-control" required
+                   placeholder="Unesite kontakt telefon">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lat">Geografska širina (latitude)</label>
+            <input type="number" id="lat" [(ngModel)]="cabin.coordinates.lat" 
+                   name="lat" class="form-control" step="0.000001"
+                   placeholder="44.7866">
+          </div>
+
+          <div class="form-group">
+            <label for="lng">Geografska dužina (longitude)</label>
+            <input type="number" id="lng" [(ngModel)]="cabin.coordinates.lng" 
+                   name="lng" class="form-control" step="0.000001"
+                   placeholder="20.4489">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Usluge</h3>
+        
+        <div class="form-group">
+          <label for="newService">Dodaj uslugu</label>
+          <div class="service-input">
+            <input type="text" id="newService" [(ngModel)]="newService" 
+                   name="newService" class="form-control"
+                   placeholder="Unesite uslugu (npr. WiFi, parking, bazen...)">
+            <button type="button" (click)="addService()" class="btn btn-add">+ Dodaj</button>
+          </div>
+        </div>
+
+        <div class="services-list">
+          @for (service of cabin.services; track service; let i = $index) {
+            <div class="service-tag">
+              {{ service }}
+              <button type="button" (click)="removeService(i)" class="btn-remove-service">×</button>
+            </div>
+          } @empty {
+            <p class="no-services">Nema dodatih usluga</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Slike vikendice</h3>
+        
+        <div class="form-group">
+          <label for="images">Dodaj nove slike</label>
+          <input type="file" id="images" (change)="onFileSelected($event)" 
+                 accept=".jpg,.jpeg,.png" class="file-input" multiple>
+          <small class="form-text">Maksimalno 10 slika, JPG/PNG format, do 5MB po slici</small>
+        </div>
+
+        <div class="image-previews">
+          @for (preview of imagePreviews; track preview; let i = $index) {
+            <div class="image-preview">
+              <img [src]="preview" alt="Preview" class="preview-image">
+              <button type="button" (click)="removeImage(i)" class="btn-remove-image">×</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="cancel()" class="btn btn-secondary">Otkaži</button>
+        <button type="button" (click)="saveChanges()" 
+                [disabled]="isLoading || !cabinForm.form.valid"
+                class="btn btn-primary">
+          @if (isLoading) {
+            Čuvanje...
+          } @else {
+            Sačuvaj izmene
+          }
+        </button>
+      </div>
+    </form>
+  }
+
+  @if (message) {
+    <div class="message" [class.success]="message.includes('uspešno')">
+      {{ message }}
+    </div>
+  }
+</div>

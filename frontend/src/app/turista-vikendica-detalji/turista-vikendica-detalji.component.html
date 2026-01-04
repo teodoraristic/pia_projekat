@@ -1,0 +1,247 @@
+<div class="cabin-details-container">
+  <div class="back-button">
+    <button (click)="backToList()" class="btn btn-secondary">← Nazad na listu</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje detalja...</div>
+  } @else if (cabin) {
+    <div class="cabin-details">
+      <div class="gallery-section">
+        <h2>{{ cabin.name }}</h2>
+        <div class="image-gallery">
+          @for (image of cabin.images; track image) {
+            <div class="gallery-item">
+              <img [src]="image" [alt]="cabin.name" class="gallery-image">
+            </div>
+          } @empty {
+            <div class="no-image">
+              <span>🖼️ Nema slika</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-card">
+          <h3>Osnovne informacije</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>Lokacija:</strong>
+              <span>{{ cabin.location }}</span>
+            </div>
+            <div class="info-item">
+              <strong>Telefon:</strong>
+              <span>{{ cabin.phone }}</span>
+            </div>
+            <div class="info-item">
+              <strong>Cena leto:</strong>
+              <span class="price">{{ cabin.priceSummer }}€</span>
+            </div>
+            <div class="info-item">
+              <strong>Cena zima:</strong>
+              <span class="price">{{ cabin.priceWinter }}€</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-section">
+          <button (click)="startReservation()" class="btn btn-primary">
+            📅 Rezerviši
+          </button>
+          @if (message) {
+            <div class="message success">{{ message }}</div>
+          }
+        </div>
+
+        <div class="info-card">
+          <h3>Usluge</h3>
+          <div class="services-list">
+            @for (usluga of cabin.services; track usluga) {
+              <span class="service-tag">{{ usluga }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Opis</h3>
+          <p class="description">{{ cabin.description }}</p>
+        </div>
+      </div>
+
+      <div class="comments-section">
+        <h3>Komentari korisnika</h3>
+
+        <div class="average-rating">
+          <strong>Prosečna ocena:</strong> {{ averageRating().toFixed(1) }} / 5
+          <span class="stars">
+              <span class="stars">{{ showStars(averageRating()) }}</span>
+          </span>
+        </div>
+
+        @if (comments.length == 0) {
+          <div>
+            <p>Nema komentara za ovu vikendicu.</p>
+          </div>
+        }
+
+        @for (comment of comments; track comment._id) {
+          <div class="comment-card">
+            <p><strong>{{ comment.touristName }}</strong> (Ocena: {{ comment.rating }}/5)</p>
+            <p>{{ comment.comment }}</p>
+            <small>{{ comment.createdAt | date:'dd.MM.yyyy.' }}</small>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div *ngIf="cabin" class="map-wrapper">
+    <h3>Lokacija na mapi</h3>
+    <div id="map" class="cabin-map"></div>
+  </div>
+
+  @if (showReservationForm) {
+    <div class="reservation-modal">
+      <div class="modal-content">
+        <div class="steps">
+          <div class="step" [class.active]="currentStep == 1">
+            <div class="step-number">1</div>
+            <div class="step-label">Podaci o rezervaciji</div>
+          </div>
+          <div class="step" [class.active]="currentStep == 2">
+            <div class="step-number">2</div>
+            <div class="step-label">Plaćanje</div>
+          </div>
+        </div>
+
+        @if (reservationMessage) {
+          <div class="modal-message error">
+            {{ reservationMessage }}
+          </div>
+        }
+
+        @if (currentStep == 1) {
+          <div class="step-content">
+            <h3>Podaci o rezervaciji</h3>
+            
+            <form #step1Form="ngForm" class="reservation-form">
+              <div class="form-row">
+                <div class="form-group">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Datum dolaska *</mat-label>
+                  <input matInput [matDatepicker]="picker1" 
+                        [(ngModel)]="reservationData.startDate" 
+                        name="startDate" required
+                        [min]="getTodayDate()">
+                  <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+                </div>
+
+                <div class="form-group">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Datum odlaska *</mat-label>
+                  <input matInput [matDatepicker]="picker2" 
+                        [(ngModel)]="reservationData.endDate" 
+                        name="endDate" required
+                        [min]="reservationData.startDate || getTodayDate()">
+                  <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                  <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="adults">Broj odraslih *</label>
+                  <input type="number" id="adults" [(ngModel)]="reservationData.adults" 
+                         name="adults" min="1" max="10" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                  <label for="children">Broj dece</label>
+                  <input type="number" id="children" [(ngModel)]="reservationData.children" 
+                         name="children" min="0" max="10" class="form-control">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" (click)="cancelReservation()" 
+                        class="btn btn-secondary">Otkaži</button>
+                <button type="button" (click)="nextStep()" 
+                        [disabled]="!step1Form.form.valid"
+                        class="btn btn-primary">Sledeći korak</button>
+              </div>
+            </form>
+          </div>
+        }
+
+        @if (currentStep == 2) {
+          <div class="step-content">
+            <h3>Plaćanje i potvrda</h3>
+            
+            <div class="reservation-summary">
+              <h4>Pregled rezervacije</h4>
+              <div class="summary-grid">
+                <div class="summary-item">
+                  <strong>Vikendica:</strong> {{ cabin?.name }}
+                </div>
+                <div class="summary-item">
+                  <strong>Period:</strong> 
+                  {{ reservationData.startDate | date:'dd.MM.yyyy.' }} - 
+                  {{ reservationData.endDate | date:'dd.MM.yyyy.' }}
+                </div>
+                <div class="summary-item">
+                  <strong>Osobe:</strong> 
+                  {{ reservationData.adults }} odraslih, 
+                  {{ reservationData.children }} dece
+                </div>
+                <div class="summary-item total-price">
+                  <strong>Ukupan iznos:</strong> {{ reservationData.totalPrice }}€
+                </div>
+              </div>
+            </div>
+
+            <form #step2Form="ngForm" class="reservation-form">
+              <div class="form-group">
+                <label for="creditCard">Broj kreditne kartice *</label>
+                <input type="text" id="creditCard" 
+                       [ngModel]="formatCreditCard(reservationData.creditCard)"
+                       (ngModelChange)="onCreditCardInput($event)"
+                       name="creditCard" required class="form-control"
+                       placeholder="XXXX XXXX XXXX XXXX"
+                       maxlength="19">
+              </div>
+
+              <div class="form-group">
+                <label for="additionalRequests">Dodatni zahtevi (opciono)</label>
+                <textarea id="additionalRequests" [(ngModel)]="reservationData.additionalRequests"
+                          name="additionalRequests" class="form-control textarea"
+                          placeholder="Unesite dodatne zahteve..."
+                          maxlength="500" rows="4"></textarea>
+                <small class="char-counter">
+                  {{ reservationData.additionalRequests.length }}/500 karaktera
+                </small>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" (click)="previousStep()" 
+                        class="btn btn-secondary">← Nazad</button>
+                <button type="button" (click)="confirmReservation()" 
+                        [disabled]="isLoading"
+                        class="btn btn-primary">
+                  @if (isLoading) {
+                    Obrada...
+                  } @else {
+                    Potvrdi rezervaciju
+                  }
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

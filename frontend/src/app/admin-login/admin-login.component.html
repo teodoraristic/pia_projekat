@@ -1,0 +1,48 @@
+<div class="admin-login-container">
+  <h2>Administratorska prijava</h2>
+  
+  <form #adminLoginForm="ngForm">
+    <div class="form-group">
+      <label for="admin_username">Korisničko ime:</label>
+      <input 
+        type="text" 
+        id="admin_username" 
+        name="admin_username" 
+        [(ngModel)]="username" 
+        required
+        class="form-control"
+        placeholder="Unesite administratorsko korisničko ime">
+    </div>
+
+    <div class="form-group">
+      <label for="admin_password">Lozinka:</label>
+      <input 
+        type="password" 
+        id="admin_password" 
+        name="admin_password" 
+        [(ngModel)]="password" 
+        required
+        class="form-control"
+        placeholder="Unesite administratorsku lozinku">
+    </div>
+
+    <button 
+      type="button" 
+      (click)="login()" 
+      [disabled]="!adminLoginForm.form.valid || isLoading"
+      class="btn">
+      <span *ngIf="isLoading">Prijavljivanje...</span>
+      <span *ngIf="!isLoading">Administratorska prijava</span>
+    </button>
+
+  </form>
+
+  <div class="security-notice">
+    ⚠️ Ova forma je namenjena isključivo ovlašćenom osoblju
+  </div>
+
+  <div class="error-message" *ngIf="message">
+    {{ message }}
+  </div>
+
+</div>

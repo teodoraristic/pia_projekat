@@ -1,0 +1,362 @@
+.cabin-details-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.back-button {
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-primary {
+  background: #2c5e8e;
+  color: white;
+}
+
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.cabin-details {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+.mat-datepicker-content {
+  z-index: 1000;
+}
+
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.no-image {
+  background: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 5px;
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.info-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.info-card h3 {
+  margin: 0 0 15px 0;
+  color: #2c5e8e;
+  border-bottom: 2px solid #2c5e8e;
+  padding-bottom: 5px;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.price {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.services-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-tag {
+  background: #2c5e8e;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+}
+
+.action-section {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.comments-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 30px;
+}
+
+.average-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+}
+
+.stars {
+  color: #ffc107;
+}
+
+.comment-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  border-left: 3px solid #2c5e8e;
+}
+
+.map-wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 30px;
+}
+
+.cabin-map {
+  height: 300px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.reservation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ddd;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.step.active .step-number {
+  background: #2c5e8e;
+  color: white;
+}
+
+.step-label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.form-control {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.char-counter {
+  text-align: right;
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.reservation-summary {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.summary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-item.total-price {
+  font-weight: 600;
+  color: #28a745;
+  border-top: 1px solid #ddd;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 15px 0;
+}
+
+.message.success {
+  background: #e6ffe6;
+  color: #006600;
+  border: 1px solid #99ff99;
+}
+
+.modal-message.error {
+  background: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #ff9999;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .cabin-details-container {
+    padding: 15px;
+  }
+
+  .cabin-details {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .steps {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .step {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .step-number {
+    margin-bottom: 0;
+  }
+}

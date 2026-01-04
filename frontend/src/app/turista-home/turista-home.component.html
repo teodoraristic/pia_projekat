@@ -1,0 +1,34 @@
+<div class="dashboard-container">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h3>Turista</h3>
+      <div class="user-info">
+        @if (user) {
+          <div>{{ user.firstName }} {{ user.lastName }}</div>
+          <small>{{ user.username }}</small>
+        } @else {
+          <div>Nije ulogovan</div>
+        }
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      @for (item of menuItems; track item.path) {
+        <li>
+          <a [routerLink]="[item.path]" routerLinkActive="active" class="menu-item">
+            <span class="menu-icon">{{ item.icon }}</span>
+            <span class="menu-label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <div class="sidebar-footer">
+      <button (click)="logOut()" class="btn-logout">🚪 Odjava</button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

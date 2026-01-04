@@ -1,0 +1,58 @@
+<div class="login-container">
+  <h2>Ulogujte se</h2>
+  <hr />
+  
+  <form #loginForm="ngForm">
+    <div class="form-group">
+      <label for="kor_ime">Korisničko ime:</label>
+      <input 
+        type="text" 
+        id="kor_ime" 
+        name="kor_ime" 
+        [(ngModel)]="username" 
+        required
+        class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="lozinka">Lozinka:</label>
+      <input 
+        type="password" 
+        id="lozinka" 
+        name="lozinka" 
+        [(ngModel)]="password" 
+        required
+        class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="tip">Tip korisnika:</label>
+      <select id="tip" name="tip" [(ngModel)]="role" required class="form-control">
+        <option value="">-- Izaberite tip --</option>
+        <option value="tourist">Turista</option>
+        <option value="owner">Vlasnik</option>
+      </select>
+    </div>
+
+    <button 
+      type="button" 
+      (click)="login()" 
+      [disabled]="!loginForm.form.valid || isLoading"
+      class="btn btn-primary">
+      <span *ngIf="isLoading">Prijavljivanje...</span>
+      <span *ngIf="!isLoading">Prijava</span>
+    </button>
+  </form>
+
+  <div class="links">
+    <a routerLink="/register">Nemate nalog? Registrujte se</a>
+  </div>
+
+  <div *ngIf="message" class="error-message">
+    {{message}}
+  </div>
+
+  <div class="links">
+    <a href="javascript:void(0)" (click)="goBackToHome()">← Nazad na početnu</a>
+  </div>
+</div>

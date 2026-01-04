@@ -1,0 +1,171 @@
+<div class="user-edit-container">
+  <div class="edit-header">
+    <h2> Izmena Korisnika</h2>
+    <p>Uređivanje podataka za: {{ user?.firstName }} {{ user?.lastName }}</p>
+  </div>
+
+  @if (message) {
+    <div class="alert" [class.alert-success]="messageType == 'success'" [class.alert-error]="messageType == 'error'">
+      {{ message }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje podataka o korisniku...</div>
+  } @else if (user) {
+    <form (ngSubmit)="saveUser()" class="edit-form">
+      
+
+      <div class="form-section">
+        <h3 class="section-title">📋 Lični Podaci</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Ime *</label>
+            <input type="text" id="firstName" [(ngModel)]="user.firstName" name="firstName" 
+                   class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastName">Prezime *</label>
+            <input type="text" id="lastName" [(ngModel)]="user.lastName" name="lastName" 
+                   class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="username">Korisničko ime *</label>
+            <input type="text" id="username" [(ngModel)]="user.username" name="username" 
+                   class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="gender">Pol</label>
+            <select id="gender" [(ngModel)]="user.gender" name="gender" class="form-control">
+              <option value="M">Muški</option>
+              <option value="Ž">Ženski</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="form-section">
+        <h3 class="section-title">Kontakt Informacije</h3>
+        
+        <div class="form-group">
+          <label for="email">Email adresa *</label>
+          <input type="email" id="email" [(ngModel)]="user.email" name="email" 
+                 class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Adresa</label>
+          <input type="text" id="address" [(ngModel)]="user.address" name="address" 
+                 class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Telefon</label>
+          <input type="tel" id="phone" [(ngModel)]="user.phone" name="phone" 
+                 class="form-control">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Profilna Slika</h3>
+        
+        <div class="image-upload-section">
+          @if (imagePreview) {
+            <div class="current-image">
+              <img [src]="imagePreview" alt="Trenutna profilna slika" class="profile-preview">
+              <button type="button" (click)="removeProfileImage()" class="btn btn-danger btn-sm">
+                🗑️ Ukloni
+              </button>
+            </div>
+          }
+          
+          <div class="file-upload">
+            <label for="profileImage" class="file-label">
+              📁 Odaberite novu sliku
+            </label>
+            <input type="file" id="profileImage" (change)="onFileSelected($event)" 
+                   accept="image/jpeg,image/png" class="file-input">
+            <small class="form-text">JPG/PNG format, preporučena veličina 100x100px - 300x300px</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Finansijski Podaci</h3>
+        
+        <div class="form-group">
+          <label for="creditCard">Broj kreditne kartice</label>
+          <input type="text" id="creditCard" [(ngModel)]="user.creditCard" name="creditCardNumber"
+                 class="form-control" placeholder="XXXX XXXX XXXX XXXX">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Sistemski Podaci</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="role">Uloga *</label>
+            <select id="role" [(ngModel)]="user.role" name="role" class="form-control" required>
+              <option value="tourist">Turista</option>
+              <option value="owner">Vlasnik</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="status">Status naloga</label>
+            <select id="status" [(ngModel)]="user.isActive" name="isActive" class="form-control">
+              <option [ngValue]="true">Aktivan</option>
+              <option [ngValue]="false">Deaktiviran</option>
+            </select>
+          </div>
+        </div>
+
+        @if (user.registrationStatus) {
+          <div class="form-group">
+            <label for="regStatus">Status registracije</label>
+            <select id="regStatus" [(ngModel)]="user.registrationStatus" name="registrationStatus" 
+                    class="form-control">
+              <option value="pending">Na čekanju</option>
+              <option value="approved">Odobren</option>
+              <option value="rejected">Odbijen</option>
+            </select>
+          </div>
+        }
+
+        @if (user.createdAt) {
+          <div class="form-group">
+            <label>Datum registracije</label>
+            <p class="readonly-field">{{ user.createdAt | date:'dd.MM.yyyy. HH:mm' }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="cancel()" class="btn btn-secondary">
+           Nazad na listu
+        </button>
+        <button type="submit" [disabled]="isSaving || !isFormValid()" class="btn btn-primary">
+          @if (isSaving) {
+            Čuvanje...
+          } @else {
+            Sačuvaj promene
+          }
+        </button>
+      </div>
+    </form>
+  } @else {
+    <div class="no-data">
+      Korisnik nije pronađen.
+      <button (click)="cancel()" class="btn btn-secondary"> Nazad na listu</button>
+    </div>
+  }
+</div>

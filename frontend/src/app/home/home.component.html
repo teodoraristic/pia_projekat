@@ -1,0 +1,124 @@
+<div class="home-container">
+  <header class="home-header">
+    <h1>Dobrodošli na Planinska Vikendica</h1>
+    <p>Pronađite savršeno mesto za odmor u prirodi</p>
+    <div class="auth-links">
+      <a routerLink="/login" class="btn">Prijava</a>
+      <a routerLink="/register" class="btn btn-secondary">Registracija</a>
+      <a routerLink="/change-password" class="btn">Promena lozinke</a>
+    </div>
+  </header>
+
+  <section class="statistics-section">
+    <h2>Statistika sistema</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">{{ statistics.totalCabins || 0 }}</div>
+        <div class="stat-label">Ukupno vikendica</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ statistics.totalOwners || 0 }}</div>
+        <div class="stat-label">Registrovanih vlasnika</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ statistics.totalTourists || 0 }}</div>
+        <div class="stat-label">Registrovanih turista</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ statistics.reservations24h || 0 }}</div>
+        <div class="stat-label">Rezervacija (24h)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ statistics.reservations7days || 0 }}</div>
+        <div class="stat-label">Rezervacija (7 dana)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ statistics.reservations30days || 0 }}</div>
+        <div class="stat-label">Rezervacija (30 dana)</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="search-section">
+    <h2>Pretraga vikendica</h2>
+    <div class="search-filters">
+      <div class="filter-group">
+        <label for="nameFilter">Naziv vikendice:</label>
+        <input type="text" id="nameFilter" [(ngModel)]="nameFilter" 
+          (input)="onFilterChange()"
+               placeholder="Unesite naziv..." class="form-control">
+      </div>
+      
+      <div class="filter-group">
+        <label for="locationFilter">Mesto:</label>
+        <input type="text" id="locationFilter" [(ngModel)]="locationFilter" 
+            (input)="onFilterChange()"
+               placeholder="Unesite mesto..." class="form-control">
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="resetFilters()" class="btn btn-secondary">Resetuj</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cabins-section">
+    <h2>Lista vikendica</h2>
+    
+    @if (isLoading) {
+      <div class="loading">Učitavanje vikendica...</div>
+    } @else {
+      <div class="table-container">
+        <table class="cabins-table">
+          <thead>
+            <tr>
+              <th (click)="toggleSort('name')" class="sortable">
+                Naziv <span >{{ getSortIndicator('name') }}</span>
+              </th>
+              <th (click)="toggleSort('location')" class="sortable">
+                Mesto <span >{{ getSortIndicator('location') }}</span>
+              </th>
+              <th>Usluge</th>
+              <th (click)="toggleSort('priceSummer')" class="sortable">
+                Cena leto (€) <span >{{ getSortIndicator('priceSummer') }}</span>
+              </th>
+              <th (click)="toggleSort('priceWinter')" class="sortable">
+                Cena zima (€) <span >{{ getSortIndicator('priceWinter') }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cabin of filteredCabins; track cabin._id) {
+              <tr>
+                <td class="cabin-name">{{ cabin.name }}</td>
+                <td>{{ cabin.location }}</td>
+                <td>
+                  <div class="services-list">
+                    @for (service of cabin.services.slice(0, 2); track service) {
+                      <span class="service-tag">{{ service }}</span>
+                    }
+                    @if (cabin.services.length > 2) {
+                      <span class="more-tag">+{{ cabin.services.length - 2 }} više</span>
+                    }
+                  </div>
+                </td>
+                <td class="price">{{ cabin.priceSummer }}€</td>
+                <td class="price">{{ cabin.priceWinter }}€</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="no-data">
+                  Nema pronađenih vikendica za zadate kriterijume
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="results-info">
+        Prikazano {{ filteredCabins.length }} od {{ cabins.length }} vikendica
+      </div>
+    }
+  </section>
+</div>

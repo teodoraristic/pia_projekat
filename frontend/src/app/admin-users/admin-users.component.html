@@ -1,0 +1,173 @@
+<div class="admin-users-container">
+  <div class="users-header">
+    <h2>👥 Upravljanje Korisnicima</h2>
+    <p>Pregled i upravljanje svim korisnicima sistema</p>
+  </div>
+
+  @if (message) {
+    <div class="alert" [class.alert-success]="messageType == 'success'" [class.alert-error]="messageType == 'error'">
+      {{ message }}
+    </div>
+  }
+
+  <div class="tabs">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab == 'all'"
+      (click)="switchTab('all')">
+      Svi korisnici
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab == 'pending'"
+      (click)="switchTab('pending')">
+      Zahtevi za registraciju
+      @if (pendingUsers.length > 0) {
+        <span class="badge">{{ pendingUsers.length }}</span>
+      }
+    </button>
+  </div>
+
+  <div class="search-section">
+    <div class="search-filters">
+      <div class="filter-group">
+        <label for="searchTerm">Pretraga:</label>
+        <input type="text" id="searchTerm" [(ngModel)]="searchTerm" 
+               placeholder="Ime, prezime, username, email..." class="form-control"
+               (input)="search()">
+      </div>
+      
+      <div class="filter-group">
+        <label for="filterRole">Uloga:</label>
+        <select id="filterRole" [(ngModel)]="filterRole" (change)="search()" class="form-control">
+          <option value="">Sve uloge</option>
+          <option value="tourist">Turista</option>
+          <option value="owner">Vlasnik</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterStatus">Status:</label>
+        <select id="filterStatus" [(ngModel)]="filterStatus" (change)="search()" class="form-control">
+          <option value="">Svi statusi</option>
+          <option value="active">Aktivni</option>
+          <option value="inactive">Deaktivirani</option>
+          @if (activeTab == 'all') {
+            <option value="pending">Na čekanju</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="resetFilters()" class="btn btn-secondary">Resetuj</button>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">Učitavanje korisnika...</div>
+  } @else {
+    <div class="table-container">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Korisničko ime</th>
+            <th>Ime i prezime</th>
+            <th>Email</th>
+            <th>Uloga</th>
+            <th>Status</th>
+            <th>Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filteredUsers; track user._id) {
+            <tr [class.pending]="user.registrationStatus == 'pending'">
+              <td class="username">{{ user.username }}</td>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="role-badge">{{ getRoleText(user.role) }}</span>
+              </td>
+              <td>
+                <span class="status-badge" [style.background-color]="getStatusColor(user)">
+                  {{ getStatusText(user) }}
+                </span>
+              </td>
+              <td class="actions">
+  
+                @if (activeTab == 'pending') {
+                  <button (click)="approveRegistration(user)" class="btn btn-success btn-sm">✅ Odobri</button>
+                  <button (click)="rejectRegistration(user)" class="btn btn-danger btn-sm">❌ Odbij</button>
+                }
+                
+                @if (activeTab == 'all') {
+                  <button (click)="editUser(user)" class="btn btn-edit btn-sm">✏️ Izmeni</button>
+                  @if (user.isActive) {
+                    <button (click)="deactivateUser(user)" class="btn btn-warning btn-sm">🚫 Deaktiviraj</button>
+                  } @else {
+                    <button (click)="activateUser(user)" class="btn btn-success btn-sm">✅ Aktiviraj</button>
+                  }
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="6" class="no-data">
+                Nema pronađenih korisnika
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="results-info">
+      Prikazano {{ filteredUsers.length }} od {{ activeTab == 'all' ? users.length : pendingUsers.length }} korisnika
+    </div>
+  }
+
+
+  @if (userToDeactivate) {
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Deaktivacija korisnika</h3>
+          <button (click)="cancelAction()" class="btn-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Da li ste sigurni da želite da deaktivirate korisnika:</p>
+          <p><strong>{{ userToDeactivate.firstName }} {{ userToDeactivate.lastName }}</strong> ({{ userToDeactivate.username }})?</p>
+          <p class="warning-text">Korisnik neće moći da pristupi sistemu!</p>
+        </div>
+        <div class="modal-actions">
+          <button (click)="cancelAction()" class="btn btn-secondary">Otkaži</button>
+          <button (click)="confirmDeactivation()" [disabled]="isLoading" class="btn btn-warning">
+            {{ isLoading ? 'Deaktiviranje...' : 'Deaktiviraj' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (userToActivate) {
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Aktivacija korisnika</h3>
+          <button (click)="cancelAction()" class="btn-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Da li ste sigurni da želite da aktivirate korisnika:</p>
+          <p><strong>{{ userToActivate.firstName }} {{ userToActivate.lastName }}</strong> ({{ userToActivate.username }})?</p>
+          <p class="info-text">Korisnik će moći da pristupi sistemu!</p>
+        </div>
+        <div class="modal-actions">
+          <button (click)="cancelAction()" class="btn btn-secondary">Otkaži</button>
+          <button (click)="confirmActivation()" [disabled]="isLoading" class="btn btn-success">
+            {{ isLoading ? 'Aktiviranje...' : 'Aktiviraj' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

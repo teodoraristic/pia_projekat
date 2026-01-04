@@ -1,0 +1,392 @@
+.admin-cabins-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.cabins-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.cabins-header h2 {
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.cabins-header p {
+  color: #666;
+}
+
+/* Pretraga */
+.search-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.search-filters {
+  display: grid;
+  grid-template-columns: 2fr auto;
+  gap: 15px;
+  align-items: end;
+}
+
+.filter-group label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  display: block;
+}
+
+.form-control {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Dugmici */
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary { background: #6c757d; }
+.btn-warning { background: #ffc107; color: black; }
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.cabins-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cabins-table th,
+.cabins-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+  height: 60px; 
+  box-sizing: border-box;
+}
+
+.cabins-table th {
+  background: #8e2c2c;
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.cabins-table th:nth-child(1) { width: 15%; } /* Naziv */
+.cabins-table th:nth-child(2) { width: 12%; } /* Lokacija */
+.cabins-table th:nth-child(3) { width: 15%; } /* Vlasnik */
+.cabins-table th:nth-child(4) { width: 12%; } /* Prosečna ocena */
+.cabins-table th:nth-child(5) { width: 10%; } /* Ukupno ocena */
+.cabins-table th:nth-child(6) { width: 12%; } /* Poslednje 3 ocene */
+.cabins-table th:nth-child(7) { width: 14%; } /* Status */
+.cabins-table th:nth-child(8) { width: 10%; } /* Akcije */
+
+.cabins-table tr:hover {
+  background: #f8f9fa;
+}
+
+.cabins-table tr.low-rated {
+  background: #ffe6e6;
+  border-left: 4px solid #dc3545;
+}
+
+.cabins-table tr.blocked {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.cabin-name {
+  font-weight: 600;
+}
+
+.rating {
+  font-weight: 500;
+}
+
+.rating.low-rating {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.status-cell {
+  vertical-align: middle;
+}
+
+.status-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.blocked-time {
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-block;
+  text-align: center;
+  min-width: 80px;
+}
+
+.active-badge {
+  background: #28a745;
+  color: white;
+}
+
+.blocked-badge {
+  background: #ffc107;
+  color: black;
+}
+
+.inactive-badge {
+  background: #dc3545;
+  color: white;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  height: 100%;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close:hover {
+  background: #e9ecef;
+  border-radius: 50%;
+}
+
+.modal-body {
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  background: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Tekstovi */
+.warning-text {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.loading, .no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.results-info {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+/* Poruke */
+.alert {
+  padding: 12px 15px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-cabins-container {
+    padding: 10px;
+  }
+  
+  .search-filters {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    border-radius: 4px;
+  }
+  
+  .cabins-table {
+    table-layout: auto;
+    font-size: 0.85rem;
+    min-width: 800px;
+  }
+  
+  .cabins-table th,
+  .cabins-table td {
+    padding: 8px 10px;
+    height: 50px;
+  }
+  
+  .cabins-table th:nth-child(n) {
+    width: auto;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .status-content {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    min-height: 28px;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+}
+
+.cabins-table td.actions {
+  height: 60px; 
+  vertical-align: middle;
+  text-align: center;
+}
+
+.action-placeholder {
+  display: inline-block;
+  min-height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+  background-color: transparent;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+}

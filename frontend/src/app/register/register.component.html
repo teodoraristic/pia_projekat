@@ -1,0 +1,106 @@
+<h3>Registracija</h3>
+
+<div class="register-container">
+  <form>
+    <div class="form-group">
+      <label>Tip korisnika:</label>
+      <select [(ngModel)]="user.role" name="role" class="form-control">
+        <option value="tourist">Turista</option>
+        <option value="owner">Vlasnik</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Korisničko ime *</label>
+      <input [(ngModel)]="user.username" name="username" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label>Lozinka *</label>
+      <input [(ngModel)]="password" name="password" type="password" class="form-control" required />
+      <div class="form-text">
+        Min 6, max 10 karaktera, mora početi slovom, bar 1 veliko slovo, 3 mala slova, 1 broj i 1 specijalni karakter
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Potvrdite lozinku *</label>
+      <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label>Ime *</label>
+      <input [(ngModel)]="user.firstName" name="firstName" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label>Prezime *</label>
+      <input [(ngModel)]="user.lastName" name="lastName" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label>Pol *</label>
+      <select [(ngModel)]="user.gender" name="gender" class="form-control">
+        <option value="">-- Izaberite pol --</option>
+        <option value="M">Muški</option>
+        <option value="Ž">Ženski</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Adresa *</label>
+      <input [(ngModel)]="user.address" name="address" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label>Kontakt telefon *</label>
+      <input [(ngModel)]="user.phone" name="phone" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label>Email adresa *</label>
+      <input [(ngModel)]="user.email" name="email" class="form-control" required />
+    </div>
+
+    <div class="form-group" *ngIf="user.role == 'tourist'">
+      <label>Broj kreditne kartice *</label>
+      <input [(ngModel)]="user.creditCard" name="creditCard" class="form-control" (input)="onCardChange()" />
+      <div class="card-info valid" *ngIf="displayCardType()">
+        {{ displayCardType() }}
+      </div>
+      <div class="card-info invalid" *ngIf="user.creditCard && !displayCardType()">
+        ❌ Nevalidan broj kartice
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Profilna slika <span *ngIf="user.role == 'owner'">*</span></label>
+      <input type="file" id="profileImage" (change)="onFileSelected($event)" class="form-control" />
+
+      <div class="image-preview" *ngIf="profileImagePreview">
+        <img [src]="profileImagePreview" alt="Preview" class="preview-image" />
+        <button type="button" class="btn-remove" (click)="removeImage()">Ukloni</button>
+      </div>
+
+      <div class="image-status" *ngIf="imageMessage">
+        {{ imageMessage }}
+      </div>
+
+      <div class="default-info" *ngIf="!profileImage && !profileImagePreview">
+        Koristiće se podrazumevana slika
+      </div>
+    </div>
+
+    <button type="button" class="btn" [disabled]="isLoading" (click)="register()">
+      {{ isLoading ? 'Registruje se...' : 'Registruj se' }}
+    </button>
+
+    <div class="links">
+      <a routerLink="/login">Već imate nalog? Prijavite se</a>
+    </div>
+
+    <div class="error-message" *ngIf="message">
+      {{ message }}
+    </div>
+  </form>
+</div>
